@@ -1,41 +1,76 @@
-pip install fastapi uvicorn httpx PyYAML pydantic argon2_cffi
+# AttackMate API Server
+
+**AttackMate API Server** is a RESTful API built with FastAPI for remotely controlling AttackMate instances and executing attack playbooks. It provides secure endpoints to orchestrate attack chains, execute commands, and run attack playbook.
 
 
-uvicorn remote_rest.main:app --host 0.0.0.0 --port 8000 --reload
+## Features
 
-[] TODO sort out logs for different instances
-
-[] TODO return logs to caller
-
-[] TODO limit max. concurent instance number
-
-[] TODO concurrency for several instances?
-
-[] TODO add authentication
-
-[] TODO queue requests for instances
-
-[] TODO dynamic configuration of attackmate config
-
-[] TODO make logging (debug, json etc) configurable at runtime (endpoint or user query paramaters?)
+- Execute AttackMate commands or playbooks remotely
+- Automatic logging for requests, command execution, and playbooks.
+- Supports SSL/TLS for secure communication.
 
 
-[x] TODO seperate router modules?
+## Requirements
 
+- Python 3.10+
+- pip
 
-
-# Certificate generation
-preliminary, automate later?
-with open ssl
-    ```bash
-    openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
-    ```
-
-Common Name: localhost (or ip adress the server will be)
-
-
-running client:
+## Installation
 
 ```bash
-python -m client --cacert <path_to_cert> login user user
+git clone https://github.com/yourusername/attackmate-api-server.git
+cd attackmate-api-server
+pip install .
 ```
+
+## Certificate generation
+with open ssl
+```bash
+    openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+
+Common Name: server IP adress
+
+Clients receive the cert.pem SSL certificate
+
+## Running the application
+```bash
+
+python3 -m attackmate_api_server.main
+```
+
+The server will run on https://0.0.0.0:8445 by default.
+
+Swagger UI: https://<host>:8445/docs – interactive API documentation.
+
+## Authentication
+The API uses token-based authentication.
+
+Endpoint: POST /login
+
+Request:
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+Response:
+```json
+{
+  "access_token": "<TOKEN>",
+  "token_type": "bearer"
+}
+```
+
+Use the token in the Authorization header for all protected endpoints
+
+## API Endpoints
+POST /playbooks/execute/yaml – Execute a playbook provided as YAML content on an AttackMate instantiated for the duration of playbook execution.
+
+POST /command/execute – Execute a command on a persistent AttackMate instance.
+Request body must follow the RemotelyExecutableCommand schema
+
+## License
+This project is licensed under EUPL-1.2
