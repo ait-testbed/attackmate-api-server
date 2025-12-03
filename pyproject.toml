@@ -1,0 +1,43 @@
+[project]
+name = "attackmate-api-server"
+description = "API server for remote control and execution of AttackMate instances."
+authors = [
+    {name = "Thorina Boenke", email = "thorina.boenke@ait.ac.at"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "EUPL-1.2"}
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "colorlog",
+    "pydantic",
+    "python-multipart",
+    "passlib[bcrypt]",
+    "argon2-cffi",
+    "python-dotenv",
+    "attackmate"
+]
+dynamic = ["version"]
+
+[project.scripts]
+attackmate-api = "main:app"
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["src"]
+
+[tool.setuptools.package-data]
+"attackmate.data" = ["*.tar.gz"]
+
+[tool.setuptools.dynamic]
+version = {attr = "attackmate_api_server.metadata.__version__"}
+
+[tool.flake8]
+max-line-length = 110
+extend-ignore = ["E203", "W503"]
