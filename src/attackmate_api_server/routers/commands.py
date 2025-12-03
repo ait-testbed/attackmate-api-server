@@ -1,6 +1,5 @@
 import logging
-from typing import Optional, Literal, Annotated, Union, TypeAlias
-from pydantic import BaseModel, Field
+from typing import Optional
 
 from attackmate.attackmate import AttackMate
 from attackmate.schemas.base import BaseCommand
@@ -9,10 +8,10 @@ from attackmate.execexception import ExecException
 from attackmate.result import Result as AttackMateResult
 from attackmate.schemas.command_subtypes import RemotelyExecutableCommand
 
-from auth_utils import API_KEY_HEADER_NAME, get_current_user
-from schemas import CommandResultModel, ExecutionResponseModel
-from utils import varstore_to_state_model
-from state import get_persistent_instance
+from attackmate_api_server.auth_utils import API_KEY_HEADER_NAME, get_current_user
+from attackmate_api_server.schemas import CommandResultModel, ExecutionResponseModel
+from attackmate_api_server.utils import varstore_to_state_model
+from attackmate_api_server.state import get_persistent_instance
 
 
 router = APIRouter(prefix='/command', tags=['Commands'])
@@ -24,14 +23,14 @@ async def run_command_on_instance(instance: AttackMate, command_data: BaseComman
     try:
         logger.info(f"Executing command type '{command_data.type}' on instance")  # type: ignore
         result = instance.run_command(command_data)
-        logger.info(f"Command execution finished. RC: {result.returncode}")
+        logger.info(f'Command execution finished. RC: {result.returncode}')
         return result
     except (ExecException, SystemExit) as e:
-        logger.error(f"AttackMate execution error: {e}", exc_info=True)
+        logger.error(f'AttackMate execution error: {e}', exc_info=True)
         raise e
     except Exception as e:
-        logger.error(f"Unexpected error during instance.run_command: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Internal server error during command execution: {e}")
+        logger.error(f'Unexpected error during instance.run_command: {e}', exc_info=True)
+        raise HTTPException(status_code=500, detail=f'Internal server error during command execution: {e}')
 
 
 @router.post('/execute', response_model=ExecutionResponseModel)
@@ -41,7 +40,8 @@ async def execute_unified_command(
     current_user: str = Depends(get_current_user),
     x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)
 ):
-    # command_request will be the correct Pydantic type based on discriminated union in RemotelyExecutableCommand
+    # command_request will be the correct Pydantic type based on discriminated
+    # union in RemotelyExecutableCommand
     attackmate_result = await run_command_on_instance(instance, command_request)
 
     result_model = CommandResultModel(

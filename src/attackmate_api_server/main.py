@@ -8,17 +8,14 @@ from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from attackmate.attackmate import AttackMate
-from attackmate.logging_setup import (initialize_json_logger,
-                                          initialize_logger,
-                                          initialize_output_logger)
-from log_utils import initialize_api_logger
+from attackmate_api_server.log_utils import initialize_api_logger
 from attackmate.playbook_parser import parse_config
 
-import state as state
-from routers import commands, instances, playbooks
+import attackmate_api_server.state as state
+from attackmate_api_server.routers import commands, instances, playbooks
 
-from auth_utils import create_access_token, get_user_hash, verify_password
-from schemas import TokenResponse
+from attackmate_api_server.auth_utils import create_access_token, get_user_hash, verify_password
+from attackmate_api_server.schemas import TokenResponse
 
 CERT_DIR = os.path.dirname(os.path.abspath(__file__))
 KEY_FILE = os.path.join(CERT_DIR, 'key.pem')
@@ -49,8 +46,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         #  any other async startup tasks ?
 
     except Exception as e:
-        logger.critical(f"Failed to initialize during startup lifespan: {e}", exc_info=True)
-        raise RuntimeError(f"Failed to initialize application state: {e}") from e
+        logger.critical(f'Failed to initialize during startup lifespan: {e}', exc_info=True)
+        raise RuntimeError(f'Failed to initialize application state: {e}') from e
 
     yield  # Application runs here
 
@@ -60,13 +57,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     for instance_id in instance_ids:
         instance = state.INSTANCES.pop(instance_id, None)
         if instance:
-            logger.info(f"Cleaning up instance {instance_id}...")
+            logger.info(f'Cleaning up instance {instance_id}...')
             try:
                 # blocking?
                 instance.clean_session_stores()
                 instance.pm.kill_or_wait_processes()
             except Exception as e:
-                logger.error(f"Error cleaning up instance {instance_id}: {e}", exc_info=True)
+                logger.error(f'Error cleaning up instance {instance_id}: {e}', exc_info=True)
     logger.info('Instance cleanup complete (lifespan).')
 
 
@@ -80,7 +77,7 @@ app = FastAPI(
 # Exception Handling
 @app.exception_handler(ExecException)
 async def attackmate_execution_exception_handler(request: Request, exc: ExecException):
-    logger.error(f"AttackMate Execution Exception: {exc}")
+    logger.error(f'AttackMate Execution Exception: {exc}')
     return JSONResponse(
         status_code=400,
         content={
@@ -94,14 +91,14 @@ async def attackmate_execution_exception_handler(request: Request, exc: ExecExce
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
     if isinstance(exc, SystemExit):
-        logger.error(f"Command triggered SystemExit with code {exc.code}")
+        logger.error(f'Command triggered SystemExit with code {exc.code}')
         return JSONResponse(
             status_code=400,  # client-side error pattern
             content={
                 'detail': 'Command execution led to termination request',
                 'error_message': (
                     f"SystemExit triggered (likely due to error condition like 'exit_on_error'). "
-                    f"Exit code: {exc.code}"
+                    f'Exit code: {exc.code}'
                 ),
                 'instance_id': None
             },
@@ -114,7 +111,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
 @app.post('/login', response_model=TokenResponse, tags=['Auth'])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     """Authenticates user and returns an access token."""
-    logger.info(f"Login attempt for user: {form_data.username}")
+    logger.info(f'Login attempt for user: {form_data.username}')
     hashed_password = get_user_hash(form_data.username)
     if not hashed_password:
         logger.warning(f"Login failed: User '{form_data.username}' not found.")
@@ -151,12 +148,12 @@ async def root():
 
 if __name__ == '__main__':
     if not os.path.exists(KEY_FILE):
-        logger.critical(f"SSL Error: Key file not found at {KEY_FILE}")
+        logger.critical(f'SSL Error: Key file not found at {KEY_FILE}')
         sys.exit(1)
     if not os.path.exists(CERT_FILE):
-        logger.critical(f"SSL Error: Certificate file not found at {CERT_FILE}")
+        logger.critical(f'SSL Error: Certificate file not found at {CERT_FILE}')
         sys.exit(1)
-    uvicorn.run('main:app',
+    uvicorn.run('attackmate_api_server.main:app',
                 host='0.0.0.0',
                 port=8445,
                 reload=False,

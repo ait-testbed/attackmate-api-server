@@ -1,9 +1,8 @@
-import logging
 from typing import Any, Dict
 
 from attackmate.variablestore import VariableStore
 
-from schemas import VariableStoreStateModel
+from attackmate_api_server.schemas import VariableStoreStateModel
 
 
 def varstore_to_state_model(varstore: VariableStore) -> VariableStoreStateModel:

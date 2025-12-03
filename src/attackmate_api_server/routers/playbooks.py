@@ -8,19 +8,18 @@ from attackmate.schemas.playbook import Playbook
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Query
 from pydantic import ValidationError
 from attackmate.attackmate import AttackMate
-from attackmate.playbook_parser import parse_playbook
 
-from auth_utils import API_KEY_HEADER_NAME, get_current_user
-from schemas import PlaybookResponseModel
-from utils import varstore_to_state_model
+from attackmate_api_server.auth_utils import API_KEY_HEADER_NAME, get_current_user
+from attackmate_api_server.schemas import PlaybookResponseModel
+from attackmate_api_server.utils import varstore_to_state_model
 
-from log_utils import instance_logging
-from state import attackmate_config
+from attackmate_api_server.log_utils import instance_logging
+from attackmate_api_server.state import attackmate_config
 
 router = APIRouter(prefix='/playbooks', tags=['Playbooks'])
 logger = logging.getLogger('attackmate_api')
 
-# helper to read logfile
+
 def read_log_file(log_path: Optional[str]) -> Optional[str]:
     if not log_path or not os.path.exists(log_path):
         return None
@@ -29,9 +28,7 @@ def read_log_file(log_path: Optional[str]) -> Optional[str]:
             return f.read()
     except Exception as e:
         logger.error(f"Failed to read log file '{log_path}': {e}")
-        return f"Error reading log file: {e}"
-
-# Playbook Execution
+        return f'Error reading log file: {e}'
 
 
 @router.post('/execute/yaml', response_model=PlaybookResponseModel)
@@ -40,8 +37,8 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
                                          False,
                                          description="Enable debug logging for this request's instance log."
 ),
-                                     current_user: str = Depends(get_current_user),
-                                     x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)):
+        current_user: str = Depends(get_current_user),
+        x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)):
     """
     Executes a playbook provided as YAML content in the request body.
     Use a transient AttackMate instance.
@@ -56,20 +53,20 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
             if not playbook_dict:
                 raise ValueError('Received empty or invalid playbook YAML content.')
             playbook = Playbook.model_validate(playbook_dict)
-            logger.info(f"Creating transient AttackMate instance, ID: {instance_id}")
+            logger.info(f'Creating transient AttackMate instance, ID: {instance_id}')
             am_instance = AttackMate(playbook=playbook, config=attackmate_config, varstore=None)
             return_code = am_instance.main()
             final_state = varstore_to_state_model(am_instance.varstore)
-            logger.info(f"Transient playbook execution finished. return code {return_code}")
+            logger.info(f'Transient playbook execution finished. return code {return_code}')
             attackmate_log = read_log_file(attackmate_log_path)
             output_log = read_log_file(output_log_path)
             json_log = read_log_file(json_log_path)
         except (yaml.YAMLError, ValidationError, ValueError) as e:
-            logger.error(f"Playbook validation/parsing error: {e}")
-            raise HTTPException(status_code=422, detail=f"Invalid playbook YAML: {e}")
+            logger.error(f'Playbook validation/parsing error: {e}')
+            raise HTTPException(status_code=422, detail=f'Invalid playbook YAML: {e}')
         except Exception as e:
-            logger.error(f"Unexpected error during playbook execution: {e}", exc_info=True)
-            raise HTTPException(status_code=500, detail=f"Server error during playbook execution: {e}")
+            logger.error(f'Unexpected error during playbook execution: {e}', exc_info=True)
+            raise HTTPException(status_code=500, detail=f'Server error during playbook execution: {e}')
         finally:
             if am_instance:
                 logger.info('Cleaning up transient playbook instance.')
@@ -77,7 +74,7 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
                     am_instance.clean_session_stores()
                     am_instance.pm.kill_or_wait_processes()
                 except Exception as cleanup_e:
-                    logger.error(f"Error cleaning transient instance: {cleanup_e}", exc_info=True)
+                    logger.error(f'Error cleaning transient instance: {cleanup_e}', exc_info=True)
 
     return PlaybookResponseModel(
         success=(return_code == 0),
@@ -89,5 +86,3 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
         json_log=json_log,
         current_token=x_auth_token
     )
-
-

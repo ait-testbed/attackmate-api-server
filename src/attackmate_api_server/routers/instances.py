@@ -3,11 +3,11 @@ import logging
 from fastapi import APIRouter, Depends
 from attackmate.attackmate import AttackMate
 
-from auth_utils import get_current_user
-from schemas import VariableStoreStateModel
-from utils import varstore_to_state_model
+from attackmate_api_server.auth_utils import get_current_user
+from attackmate_api_server.schemas import VariableStoreStateModel
+from attackmate_api_server.utils import varstore_to_state_model
 
-from state import get_instance_by_id, get_persistent_instance
+from attackmate_api_server.state import get_instance_by_id, get_persistent_instance
 
 router = APIRouter(tags=['Instances'])
 logger = logging.getLogger('attackmate_api')
