@@ -18,9 +18,14 @@
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/attackmate-api-server.git
+git clone https://github.com/ait-testbed/attackmate-api-server.git
 cd attackmate-api-server
-pip install .
+pip3 install .
+```
+
+Using pip:
+```
+$ pip3 install attackmate-api-server
 ```
 
 ## Certificate generation
