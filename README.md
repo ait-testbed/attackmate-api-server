@@ -78,4 +78,4 @@ POST /command/execute – Execute a command on a persistent AttackMate instance.
 Request body must follow the RemotelyExecutableCommand schema
 
 ## License
-This project is licensed under EUPL-1.2
+This project is licensed under [EUPL-1.2](LICENSE)

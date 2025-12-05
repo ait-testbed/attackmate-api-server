@@ -17,7 +17,10 @@ dependencies = [
     "passlib[bcrypt]",
     "argon2-cffi",
     "python-dotenv",
-    "attackmate"
+    "pytest-asyncio",
+    "pytest",
+    "attackmate",
+    "pytest-asyncio"
 ]
 dynamic = ["version"]
 
@@ -31,9 +34,6 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 namespaces = true
 where = ["src"]
-
-[tool.setuptools.package-data]
-"attackmate.data" = ["*.tar.gz"]
 
 [tool.setuptools.dynamic]
 version = {attr = "attackmate_api_server.metadata.__version__"}
