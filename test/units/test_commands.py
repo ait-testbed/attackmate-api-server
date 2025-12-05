@@ -3,7 +3,6 @@ from contextlib import ExitStack
 from unittest.mock import patch, MagicMock
 from attackmate.result import Result as AttackMateResult
 from attackmate.schemas.base import BaseCommand
-# Mock the AttackMate dependencies and the router
 
 
 @pytest.fixture
@@ -13,7 +12,6 @@ def mock_command_dependencies():
     Uses ExitStack for safe context manager grouping in Python 3.10.
     """
     with ExitStack() as stack:
-        # Patch dependencies in the module where they are looked up (routers.commands)
         mock_get_current_user = stack.enter_context(
             patch('attackmate_api_server.routers.commands.get_current_user', return_value='testuser')
         )
@@ -26,14 +24,11 @@ def mock_command_dependencies():
                 return_value={
                     'state': 'data'}))
 
-        # Yield the mocked objects to the tests for configuration (e.g., setting return_value)
         yield {
             'get_current_user': mock_get_current_user,
             'get_persistent_instance': mock_get_persistent_instance,
             'varstore_to_state_model': mock_varstore_to_state_model
         }
-
-# Define a mock application that includes the commands router
 
 
 @pytest.fixture
