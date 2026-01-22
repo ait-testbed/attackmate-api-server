@@ -58,12 +58,12 @@ def has_stdout_handler(logger: logging.Logger) -> bool:
 
 @contextmanager
 def instance_logging(instance_id: str, log_level: int = logging.INFO):
-    """cd
+    """
     Context manager to temporarily add a file handler for a specific instance
     to the target AttackMate loggers.
     """
     handlers: List[logging.FileHandler] = []
-    instance_output_log_file = None  # Initialize
+    instance_output_log_file = None  
     instance_attackmate_log_file = None
 
     try:
