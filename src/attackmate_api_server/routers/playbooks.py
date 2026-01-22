@@ -55,7 +55,7 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
             playbook = Playbook.model_validate(playbook_dict)
             logger.info(f'Creating transient AttackMate instance, ID: {instance_id}')
             am_instance = AttackMate(playbook=playbook, config=attackmate_config, varstore=None)
-            return_code = am_instance.main()
+            return_code = await am_instance.main()
             final_state = varstore_to_state_model(am_instance.varstore)
             logger.info(f'Transient playbook execution finished. return code {return_code}')
             attackmate_log = read_log_file(attackmate_log_path)
@@ -71,7 +71,7 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
             if am_instance:
                 logger.info('Cleaning up transient playbook instance.')
                 try:
-                    am_instance.clean_session_stores()
+                    await am_instance.clean_session_stores()
                     am_instance.pm.kill_or_wait_processes()
                 except Exception as cleanup_e:
                     logger.error(f'Error cleaning transient instance: {cleanup_e}', exc_info=True)

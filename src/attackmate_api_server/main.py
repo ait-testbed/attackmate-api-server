@@ -41,7 +41,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         # Initialize the INSTANCES dict (it's already defined globally in state.py)
         state.INSTANCES.clear()
         # instantiate the Instance in the INSTANCES dict
-        state.INSTANCES['default_context'] = AttackMate(playbook=None, config=loaded_config, varstore=None)
+        state.INSTANCES['default_context'] = AttackMate(
+            playbook=None, config=loaded_config, varstore=None, is_api_instance=True)
         logger.info('Instances dictionary initialized.')
         #  any other async startup tasks ?
 
@@ -59,8 +60,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         if instance:
             logger.info(f'Cleaning up instance {instance_id}...')
             try:
-                # blocking?
-                instance.clean_session_stores()
+                await instance.clean_session_stores()
+                # maybe TODO? Move process killing to a thread if it's blocking,
+                # or make the ProcessManager async-aware
                 instance.pm.kill_or_wait_processes()
             except Exception as e:
                 logger.error(f'Error cleaning up instance {instance_id}: {e}', exc_info=True)
@@ -146,7 +148,8 @@ app.include_router(commands.router)
 async def root():
     return {'message': 'AttackMate API is running. Use /login to authenticate. See /docs.'}
 
-if __name__ == '__main__':
+
+def start():
     if not os.path.exists(KEY_FILE):
         logger.critical(f'SSL Error: Key file not found at {KEY_FILE}')
         sys.exit(1)
@@ -160,3 +163,7 @@ if __name__ == '__main__':
 
                 ssl_keyfile=KEY_FILE,
                 ssl_certfile=CERT_FILE)
+
+
+if __name__ == '__main__':
+    start()

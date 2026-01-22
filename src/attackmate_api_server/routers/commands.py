@@ -22,7 +22,7 @@ async def run_command_on_instance(instance: AttackMate, command_data: BaseComman
     """Runs a command on a given AttackMate instance."""
     try:
         logger.info(f"Executing command type '{command_data.type}' on instance")  # type: ignore
-        result = instance.run_command(command_data)
+        result = await instance.run_command(command_data)
         logger.info(f'Command execution finished. RC: {result.returncode}')
         return result
     except (ExecException, SystemExit) as e:
@@ -46,7 +46,7 @@ async def execute_unified_command(
 
     result_model = CommandResultModel(
         success=(attackmate_result.returncode == 0 if attackmate_result.returncode is not None else True),
-        stdout=attackmate_result.stdout,
+        stdout=str(attackmate_result.stdout) if attackmate_result.stdout is not None else '',
         returncode=attackmate_result.returncode
     )
     state_model = varstore_to_state_model(instance.varstore)
