@@ -41,7 +41,7 @@ Clients receive the cert.pem SSL certificate
 ## Running the application
 ```bash
 
-python3 -m attackmate_api_server.main
+attackmate-api
 ```
 
 The server will run on https://0.0.0.0:8445 by default.
