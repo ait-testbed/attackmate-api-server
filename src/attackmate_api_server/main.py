@@ -31,6 +31,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info('AttackMate API starting up (lifespan)...')
     try:
         # Load global config on startup and assign to the variable in state.py
+        config_path = os.getenv('ATTACKMATE_CONFIG_PATH')
+        if config_path:
+            logger.info(f'Loading AttackMate configuration from specified path: {config_path}')
+            loaded_config = parse_config(config_file=config_path, logger=logger)
+        else:
+            logger.info('No ATTACKMATE_CONFIG_PATH specified, loading default configuration.')
         loaded_config = parse_config(config_file=None, logger=logger)
         if loaded_config:
             state.attackmate_config = loaded_config
@@ -77,8 +83,8 @@ app = FastAPI(
 
 
 # Exception Handling
-@app.exception_handler(ExecException)
-async def attackmate_execution_exception_handler(request: Request, exc: ExecException):
+@app.exception_handler(ExecException)  # type: ignore[misc]
+async def attackmate_execution_exception_handler(request: Request, exc: ExecException) -> JSONResponse:
     logger.error(f'AttackMate Execution Exception: {exc}')
     return JSONResponse(
         status_code=400,
@@ -90,8 +96,8 @@ async def attackmate_execution_exception_handler(request: Request, exc: ExecExce
     )
 
 
-@app.exception_handler(Exception)
-async def generic_exception_handler(request: Request, exc: Exception):
+@app.exception_handler(Exception)  # type: ignore[misc]
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     if isinstance(exc, SystemExit):
         logger.error(f'Command triggered SystemExit with code {exc.code}')
         return JSONResponse(
@@ -105,13 +111,13 @@ async def generic_exception_handler(request: Request, exc: Exception):
                 'instance_id': None
             },
         )
-    # Re-raise other exceptions for specific hanfling?
+    # Re-raise other exceptions for specific handling?
     raise exc
 
 
 # Login endpoint
-@app.post('/login', response_model=TokenResponse, tags=['Auth'])
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+@app.post('/login', response_model=TokenResponse, tags=['Auth'])  # type: ignore[misc]
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> TokenResponse:
     """Authenticates user and returns an access token."""
     logger.info(f'Login attempt for user: {form_data.username}')
     hashed_password = get_user_hash(form_data.username)
@@ -144,12 +150,12 @@ app.include_router(commands.router)
 
 
 # Root Endpoint
-@app.get('/', include_in_schema=False)
-async def root():
+@app.get('/', include_in_schema=False)  # type: ignore[misc]
+async def root() -> dict[str, str]:
     return {'message': 'AttackMate API is running. Use /login to authenticate. See /docs.'}
 
 
-def start():
+def start() -> None:
     if not os.path.exists(KEY_FILE):
         logger.critical(f'SSL Error: Key file not found at {KEY_FILE}')
         sys.exit(1)
