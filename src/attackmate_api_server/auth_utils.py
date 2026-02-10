@@ -27,7 +27,7 @@ logger = logging.getLogger('attackmate_api')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return bool(pwd_context.verify(plain_password, hashed_password))
 
 
 def get_user_hash(username: str) -> Optional[str]:
@@ -59,7 +59,7 @@ def renew_token_expiry(token: str) -> bool:
     return False
 
 
-def cleanup_expired_tokens():
+def cleanup_expired_tokens() -> None:
     """Removes expired tokens from the store."""
     now = datetime.now(timezone.utc)
     expired_tokens = [token for token, data in ACTIVE_TOKENS.items() if data['expires'] < now]

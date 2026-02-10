@@ -25,7 +25,7 @@ instance_log_formatter = logging.Formatter(
 )
 json_log_formatter = logging.Formatter('%(message)s')
 
-def initialize_api_logger(debug: bool, append_logs: bool):
+def initialize_api_logger(debug: bool, append_logs: bool) -> logging.Logger:
     api_logger = logging.getLogger('attackmate_api')
     api_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
@@ -57,7 +57,7 @@ def has_stdout_handler(logger: logging.Logger) -> bool:
     )
 
 @contextmanager
-def instance_logging(instance_id: str, log_level: int = logging.INFO):
+def instance_logging(instance_id: str, log_level: int = logging.INFO) -> Generator[List[Optional[str]], None, None]:
     """
     Context manager to temporarily add a file handler for a specific instance
     to the target AttackMate loggers.
