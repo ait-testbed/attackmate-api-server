@@ -57,13 +57,8 @@ extend-ignore = ["E203", "W503"]
 attackmate = { path = "../attackmate", editable = true }
 
 [[tool.mypy.overrides]]
-modules = [
-    "test.*",
-    "test_commands"
-]
-# Allows to use @pytest.fixture without mypy complaining
+# Use a wildcard to cover the entire test directory
+module = "test.*"
 disallow_untyped_decorators = false
-# Allows to skip "-> None" on test functions
 disallow_untyped_defs = false
-# Allows to skip type hints for arguments in fixtures
 check_untyped_defs = false
