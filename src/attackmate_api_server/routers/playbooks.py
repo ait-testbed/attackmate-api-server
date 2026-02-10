@@ -39,8 +39,8 @@ async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='
 ),
         current_user: str = Depends(get_current_user),
         x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)):
-    """
-    Executes a playbook provided as YAML content in the request body.
+    """Executes a playbook provided as YAML content in the request body.
+
     Use a transient AttackMate instance.
     """
     logger.info('Received request to execute playbook from YAML content.')

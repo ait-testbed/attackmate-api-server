@@ -47,7 +47,10 @@ def create_access_token(username: str) -> str:
 
 
 def renew_token_expiry(token: str) -> bool:
-    """Updates the expiry time for an existing token. Returns True if successful."""
+    """Updates the expiry time for an existing token.
+
+    Returns True if successful.
+    """
     token_data = ACTIVE_TOKENS.get(token)
     if token_data:
         token_data['expires'] = datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
@@ -57,7 +60,7 @@ def renew_token_expiry(token: str) -> bool:
 
 
 def cleanup_expired_tokens():
-    """Removes expired tokens from the store"""
+    """Removes expired tokens from the store."""
     now = datetime.now(timezone.utc)
     expired_tokens = [token for token, data in ACTIVE_TOKENS.items() if data['expires'] < now]
     for token in expired_tokens:
@@ -68,11 +71,8 @@ def cleanup_expired_tokens():
 
 # Authentication Dependency -> this gets passed to the routes
 async def get_current_user(token: str = Depends(api_key_header_scheme)) -> str:
-    """
-    validate token and return the username
-    renews the token's expiration on successful validation
-    cleanup of expired tokens.
-    """
+    """Validate token and return the username renews the token's expiration on
+    successful validation cleanup of expired tokens."""
 
     cleanup_expired_tokens()
 

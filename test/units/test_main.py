@@ -13,7 +13,7 @@ def patch_dependencies():
         patch('attackmate_api_server.routers.commands.get_persistent_instance') \
             as mock_get_persistent_instance, \
         patch('attackmate_api_server.routers.commands.varstore_to_state_model',
-            return_value={'state': 'data'}) as mock_varstore_to_state:
+              return_value={'state': 'data'}) as mock_varstore_to_state:
         yield {
             'get_user_hash': mock_get_user_hash,
             'verify_password': mock_verify_password,

@@ -42,14 +42,28 @@ async def execute_unified_command(
 ):
     # command_request will be the correct Pydantic type based on discriminated
     # union in RemotelyExecutableCommand
-    attackmate_result = await run_command_on_instance(instance, command_request)
+    try:
+        attackmate_result = await run_command_on_instance(instance, command_request)
+        success = (attackmate_result.returncode == 0)
+        stdout = str(attackmate_result.stdout)
+        error_msg = None
+        return_code = attackmate_result.returncode
+    except ExecException as exc:
+        logger.error(f'Command execution failed: {exc}')
+        success = False
+        stdout = ''
+        error_msg = str(exc)
+        return_code = 1
 
     result_model = CommandResultModel(
-        success=(attackmate_result.returncode == 0 if attackmate_result.returncode is not None else True),
-        stdout=str(attackmate_result.stdout) if attackmate_result.stdout is not None else '',
-        returncode=attackmate_result.returncode
+        success=success,
+        stdout=stdout,
+        returncode=return_code,
+        error_message=error_msg
     )
+
     state_model = varstore_to_state_model(instance.varstore)
+
     return ExecutionResponseModel(
         result=result_model,
         state=state_model,
