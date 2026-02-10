@@ -24,6 +24,16 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[dependency-groups]
+dev = [
+    "prek>=0.2.8",
+    "pytest>=8.4.1",
+    "pytest-mock",
+    "pytest-cov>=6.2.1",
+    "types-requests",
+]
+
+
 [project.scripts]
 attackmate-api = "attackmate_api_server.main:start"
 
