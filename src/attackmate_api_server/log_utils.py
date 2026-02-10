@@ -115,7 +115,7 @@ def instance_logging(instance_id: str, log_level: int = logging.INFO) -> Generat
 
     except Exception as e:
         api_logger.error(f"Error setting up instance logging for '{instance_id}': {e}", exc_info=True)
-        yield  # main code execution if logging fails
+        yield [] # main code execution if logging fails
 
     finally:
         logger.info(f"Removing instance log handlers for '{instance_id}'...")

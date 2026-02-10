@@ -31,14 +31,14 @@ def read_log_file(log_path: Optional[str]) -> Optional[str]:
         return f'Error reading log file: {e}'
 
 
-@router.post('/execute/yaml', response_model=PlaybookResponseModel)
+@router.post('/execute/yaml', response_model=PlaybookResponseModel)  # type: ignore[misc]
 async def execute_playbook_from_yaml(playbook_yaml: str = Body(..., media_type='application/yaml'),
                                      debug: bool = Query(
                                          False,
                                          description="Enable debug logging for this request's instance log."
 ),
         current_user: str = Depends(get_current_user),
-        x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)):
+        x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)) -> PlaybookResponseModel:
     """Executes a playbook provided as YAML content in the request body.
 
     Use a transient AttackMate instance.

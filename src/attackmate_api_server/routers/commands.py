@@ -21,7 +21,7 @@ logger = logging.getLogger('attackmate_api')
 async def run_command_on_instance(instance: AttackMate, command_data: BaseCommand) -> AttackMateResult:
     """Runs a command on a given AttackMate instance."""
     try:
-        logger.info(f"Executing command type '{command_data.type}' on instance")  # type: ignore
+        logger.info(f"Executing command type '{command_data.type}' on instance")
         result = await instance.run_command(command_data)
         logger.info(f'Command execution finished. RC: {result.returncode}')
         return result
@@ -33,13 +33,13 @@ async def run_command_on_instance(instance: AttackMate, command_data: BaseComman
         raise HTTPException(status_code=500, detail=f'Internal server error during command execution: {e}')
 
 
-@router.post('/execute', response_model=ExecutionResponseModel)
+@router.post('/execute', response_model=ExecutionResponseModel)  # type: ignore[misc]
 async def execute_unified_command(
     command_request: RemotelyExecutableCommand,
     instance: AttackMate = Depends(get_persistent_instance),
     current_user: str = Depends(get_current_user),
     x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)
-):
+) -> ExecutionResponseModel:
     # command_request will be the correct Pydantic type based on discriminated
     # union in RemotelyExecutableCommand
     try:
