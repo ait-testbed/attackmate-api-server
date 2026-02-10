@@ -19,7 +19,7 @@ dependencies = [
     "python-dotenv",
     "pytest-asyncio",
     "pytest",
-    "attackmate",
+    "attackmate @ git+https://github.com/thorinaboenke/attackmate.git@_api_refactor",
     "pytest-asyncio",
     "mypy>=1.19.1",
 ]
