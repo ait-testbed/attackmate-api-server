@@ -20,12 +20,40 @@
 ```bash
 git clone https://github.com/ait-testbed/attackmate-api-server.git
 cd attackmate-api-server
-pip3 install .
 ```
 
-Using pip:
+With uv (recommended):
+
+```bash
+uv sync --dev
 ```
-$ pip3 install attackmate-api-server
+
+Using pip and virtualenv:
+```
+python -m venv venv
+source venv/bin/activate
+pip install -e .
+```
+
+## Developer setup
+
+If you plan to contribute to the development of this package, follow these steps to set up the dev environment and install pre-commit hooks (using [prek](https://github.com/j178/prek))
+
+```bash
+uv sync --dev
+uv run --dev prek install
+```
+
+Run the tests:
+
+```bash
+uv run --dev pytest -q
+```
+
+Run the tests with coverage (add `--cov-report=html` to generate an HTML report):
+
+```bash
+uv run --dev pytest --cov=. --cov-report=term-missing
 ```
 
 ## Certificate generation
@@ -40,8 +68,7 @@ Clients receive the cert.pem SSL certificate
 
 ## Running the application
 ```bash
-
-attackmate-api
+uv run attackmate-api
 ```
 
 The server will run on https://0.0.0.0:8445 by default.
