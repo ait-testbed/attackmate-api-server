@@ -1,14 +1,17 @@
+# mypy: ignore-errors
+from typing import Any, Dict, Generator
 import pytest
 from contextlib import ExitStack
-from unittest.mock import patch, MagicMock
+from fastapi import FastAPI
+from unittest.mock import patch, MagicMock, AsyncMock
 from attackmate.result import Result as AttackMateResult
 from attackmate.schemas.base import BaseCommand
 
 
 @pytest.fixture
-def mock_command_dependencies():
-    """
-    Mocks dependencies for the command router endpoints.
+def mock_command_dependencies() -> Generator[Dict[str, Any], None, None]:
+    """Mocks dependencies for the command router endpoints.
+
     Uses ExitStack for safe context manager grouping in Python 3.10.
     """
     with ExitStack() as stack:
@@ -32,7 +35,7 @@ def mock_command_dependencies():
 
 
 @pytest.fixture
-def mock_command_app(mock_command_dependencies):
+def mock_command_app(mock_command_dependencies) -> FastAPI:
     from fastapi import FastAPI
     from attackmate_api_server.routers import commands
     app = FastAPI()
@@ -41,10 +44,10 @@ def mock_command_app(mock_command_dependencies):
 
 
 @pytest.mark.asyncio
-async def test_run_command_on_instance_success():
+async def test_run_command_on_instance_success() -> None:
     from attackmate_api_server.routers.commands import run_command_on_instance
 
-    mock_instance = MagicMock()
+    mock_instance = AsyncMock()
     mock_command = MagicMock(spec=BaseCommand, type='test_command')
     mock_result = AttackMateResult(returncode=0, stdout='Success output')
     mock_instance.run_command.return_value = mock_result
