@@ -27,9 +27,6 @@ jobs:
         activate-environment: true
         enable-cache: true
 
-    - name: Install attackmate library
-      run: uv pip install "git+https://github.com/thorinaboenke/attackmate.git@_api_refactor"
-
     - name: Run pre-commit with prek
       run: uv run --dev prek run -a
         
