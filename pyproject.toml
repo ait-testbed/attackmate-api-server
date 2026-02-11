@@ -53,8 +53,6 @@ version = {attr = "attackmate_api_server.metadata.__version__"}
 max-line-length = 110
 extend-ignore = ["E203", "W503"]
 
-[tool.uv.sources]
-attackmate = { path = "../attackmate", editable = true }
 
 [[tool.mypy.overrides]]
 # Use a wildcard to cover the entire test directory
