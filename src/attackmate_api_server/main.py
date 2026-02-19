@@ -33,11 +33,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         # Load global config on startup and assign to the variable in state.py
         config_path = os.getenv('ATTACKMATE_CONFIG_PATH')
         if config_path:
-            logger.info(f'Loading AttackMate configuration from specified path: {config_path}')
             loaded_config = parse_config(config_file=config_path, logger=logger)
+            logger.info(f'Loading AttackMate configuration from specified path: {config_path}')
         else:
             logger.info('No ATTACKMATE_CONFIG_PATH specified, loading default configuration.')
-        loaded_config = parse_config(config_file=None, logger=logger)
+            loaded_config = parse_config(config_file=None, logger=logger)
         if loaded_config:
             state.attackmate_config = loaded_config
             logger.info('Global AttackMate configuration loaded.')
