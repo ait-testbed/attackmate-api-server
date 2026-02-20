@@ -31,7 +31,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_user_hash(username: str) -> Optional[str]:
     """Fetches the hashed password from the centralized settings."""
-    logger.info(f"user hashses from settings: {settings}")
     return settings.users.get(username.lower())
 
 
