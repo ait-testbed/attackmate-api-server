@@ -13,13 +13,13 @@ from attackmate.playbook_parser import parse_config
 
 import attackmate_api_server.state as state
 from attackmate_api_server.routers import commands, instances, playbooks
-
+from attackmate_api_server.config import settings
 from attackmate_api_server.auth_utils import create_access_token, get_user_hash, verify_password
 from attackmate_api_server.schemas import TokenResponse
 
 CERT_DIR = os.path.dirname(os.path.abspath(__file__))
-KEY_FILE = os.path.join(CERT_DIR, 'key.pem')
-CERT_FILE = os.path.join(CERT_DIR, 'cert.pem')
+KEY_FILE = os.path.join(CERT_DIR, settings.ssl_key_file)
+CERT_FILE = os.path.join(CERT_DIR, settings.ssl_cert_file)
 
 # Initialize loggers
 logger = initialize_api_logger(debug=True, append_logs=False)
@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info('AttackMate API starting up (lifespan)...')
     try:
         # Load global config on startup and assign to the variable in state.py
-        config_path = os.getenv('ATTACKMATE_CONFIG_PATH')
+        config_path = settings.attackmate_config_path
         if config_path:
             loaded_config = parse_config(config_file=config_path, logger=logger)
             logger.info(f'Loading AttackMate configuration from specified path: {config_path}')

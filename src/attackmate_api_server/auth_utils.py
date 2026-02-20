@@ -1,5 +1,4 @@
 import logging
-import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
@@ -8,11 +7,11 @@ from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
 from passlib.context import CryptContext
+from attackmate_api_server.config import settings
 
 load_dotenv()
 
 
-TOKEN_EXPIRE_MINUTES = int(os.getenv('TOKEN_EXPIRE_MINUTES', 30))
 API_KEY_HEADER_NAME = 'X-Auth-Token'
 api_key_header_scheme = APIKeyHeader(name=API_KEY_HEADER_NAME, auto_error=True)
 pwd_context = CryptContext(schemes=['argon2'], deprecated='auto')
@@ -31,15 +30,15 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_user_hash(username: str) -> Optional[str]:
-    """Fetches the hashed password from environment variables."""
-    env_var_name = f'USER_{username.upper()}_HASH'
-    return os.getenv(env_var_name)
+    """Fetches the hashed password from the centralized settings."""
+    logger.info(f"user hashses from settings: {settings}")
+    return settings.users.get(username.lower())
 
 
 def create_access_token(username: str) -> str:
     """Creates a new token, stores it, and returns the token string."""
     token = secrets.token_urlsafe(32)
-    expires = datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
+    expires = datetime.now(timezone.utc) + timedelta(minutes=settings.token_expire_minutes)
     # TODO locking needed for multi-threaded access, smth like with token_lock ?
     ACTIVE_TOKENS[token] = {'username': username, 'expires': expires}
     logger.info(f"Created new token for user '{username}' expiring at {expires}")
@@ -53,7 +52,7 @@ def renew_token_expiry(token: str) -> bool:
     """
     token_data = ACTIVE_TOKENS.get(token)
     if token_data:
-        token_data['expires'] = datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
+        token_data['expires'] = datetime.now(timezone.utc) + timedelta(minutes=settings.token_expire_minutes)
         logger.debug(f"Renewed token expiry for user '{token_data['username']}'")
         return True
     return False
