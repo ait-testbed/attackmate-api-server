@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     # SSL Settings
     ssl_key_file: str = "key.pem"
     ssl_cert_file: str = "cert.pem"
+    debug_logging: bool = False  # Set DEBUG_LOGGING=true in .env to enable file logging
+    log_dir: str = "attackmate_server_logs"
 
     # User Hashes: Key is username (lowercase), Value is argon2 hash
     # Environment Var: users='{"user1": "hash1"}'
