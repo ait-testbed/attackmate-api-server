@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # SSL Settings
     ssl_key_file: str = "key.pem"
     ssl_cert_file: str = "cert.pem"
-    write_playbook_logs_to_disk: bool = False  # Set DEBUG_LOGGING=true in .env to enable file logging
+    write_playbook_logs_to_disk: bool = False  # Set WRITE_PLAYBOOK_LOGS_TO_DISK in .env
     log_dir: str = "attackmate_server_logs"
 
     # User Hashes: Key is username (lowercase), Value is argon2 hash

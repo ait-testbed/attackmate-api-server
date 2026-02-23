@@ -24,7 +24,7 @@ async def execute_playbook_from_yaml(
         False,
         description=(
             "Enable DEBUG log level for the AttackMate instance executing this playbook. "
-            "File logging on the API server is controlled separately via DEBUG_LOGGING in .env."
+            "File logging on the API server is controlled by WRITE_PLAYBOOK_LOGS_TO_DISK in .env."
         )
     ),
     current_user: str = Depends(get_current_user),
@@ -34,7 +34,7 @@ async def execute_playbook_from_yaml(
     transient AttackMate instance.
 
     - `debug` (query param): controls the AttackMate instance log level (DEBUG vs INFO)
-    - `DEBUG_LOGGING` (.env setting): controls whether instance logs are saved to disk on the server
+    - `WRITE_PLAYBOOK_LOGS_TO_DISK` (.env setting): instance logs saved to disk on the server
     """
     logger.info('Received request to execute playbook from YAML content.')
     instance_id = str(uuid.uuid4())
