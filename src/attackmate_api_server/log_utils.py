@@ -61,13 +61,13 @@ class InMemoryLogHandler(logging.Handler):
 @contextmanager
 def instance_logging(
     instance_id: str,
-    debug_logging: bool,
+    write_playbook_logs_to_disk: bool,
     log_level: int = logging.INFO
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Context manager for per-instance logging.
     Always captures logs in-memory to return to the client.
-    Only writes to disk if debug_logging=True.
+    Only writes to disk if write_playbook_logs_to_disk=True.
     Yields a dict with keys: 'log_files' (List[Optional[str]]) and 'handlers_ref' (InMemoryLogHandler per logger).
     """
     file_handlers: List[logging.FileHandler] = []
@@ -82,8 +82,8 @@ def instance_logging(
 
     try:
         file_map: Dict[str, logging.FileHandler] = {}
-        # if debug_logging=True logs will be written to disk
-        if debug_logging:
+        # if write_playbook_logs_to_disk=True logs will be written to disk
+        if write_playbook_logs_to_disk:
             os.makedirs(LOG_DIR, exist_ok=True)
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             paths = {
@@ -112,12 +112,12 @@ def instance_logging(
             logger.propagate = False
             if mem_map[logger_name] not in logger.handlers:
                 logger.addHandler(mem_map[logger_name])
-            if debug_logging:
+            if write_playbook_logs_to_disk:
                 logger.addHandler(file_map[logger_name])
 
             api_logger.info(
                 f"Instance '{instance_id}': logging set up for '{logger_name}' "
-                f"[in-memory=True, file={debug_logging}]"
+                f"[in-memory=True, file={write_playbook_logs_to_disk}]"
             )
 
         yield {

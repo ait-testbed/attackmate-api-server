@@ -41,8 +41,7 @@ async def execute_playbook_from_yaml(
 
     # debug (query param)  -> AttackMate instance log level
     instance_log_level = logging.DEBUG if debug else logging.INFO
-    # settings.debug_logging (.env) -> whether to write instance logs to disk on the server
-    write_logs_to_disk = settings.debug_logging
+    write_logs_to_disk = settings.write_playbook_logs_to_disk
 
     am_instance = None
     return_code = 1
@@ -53,7 +52,7 @@ async def execute_playbook_from_yaml(
 
     with instance_logging(
         instance_id,
-        debug_logging=write_logs_to_disk,
+        write_playbook_logs_to_disk=write_logs_to_disk,
         log_level=instance_log_level
     ) as log_ctx:
         try:
@@ -81,7 +80,7 @@ async def execute_playbook_from_yaml(
                 except Exception as cleanup_e:
                     logger.error(f'Error cleaning transient instance: {cleanup_e}', exc_info=True)
 
-        # Always return logs from in-memory capture (sent back to client regardless of debug_logging)
+        # Always return logs from in-memory capture (always sent back to client)
         mem = log_ctx['mem_handlers']
         attackmate_log = '\n'.join(mem['playbook'].get_logs()) or None
         output_log = '\n'.join(mem['output'].get_logs()) or None
