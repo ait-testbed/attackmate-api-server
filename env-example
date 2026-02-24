@@ -1,0 +1,15 @@
+# AttackMate API Server - Example Environment Configuration
+# Copy this file to .env and fill in your values
+
+# JSON object mapping usernames to Argon2-hashed passwords
+# Generate hashes using: python scripts/create_hashes.py
+USERS='{"username": "<argon2_hash>"}'
+
+# Absolute path to the AttackMate configuration file
+ATTACKMATE_CONFIG_PATH="/path/to/attackmate.yml"
+
+# Whether to persist playbook logs to disk (True/False)
+WRITE_PLAYBOOK_LOGS_TO_DISK="False"
+
+# Directory for log output
+LOG_DIR="/path/to/logs"

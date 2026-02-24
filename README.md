@@ -66,6 +66,31 @@ Common Name: server IP adress
 
 Clients receive the cert.pem SSL certificate
 
+## Environment Configuration
+Create an .env file in the project root with the following variables:
+```env
+USERS='{"username": "<argon2_hash>", ...}'
+ATTACKMATE_CONFIG_PATH="/path/to/attackmate.yml"
+WRITE_PLAYBOOK_LOGS_TO_DISK="False"
+LOG_DIR="/path/to/logs"
+```
+
+| Variable | Description |
+|---|---|
+| `USERS` | JSON object mapping usernames to Argon2-hashed passwords |
+| `ATTACKMATE_CONFIG_PATH` | Absolute path to the AttackMate config YAML |
+| `WRITE_PLAYBOOK_LOGS_TO_DISK` | Whether to persist playbook logs to disk (`True`/`False`) |
+| `LOG_DIR` | Directory for log output |
+
+
+To generate the USERS value, edit and run `scripts/create_hashes.py` with your desired usernames and passwords:
+```bash
+python scripts/create_hashes.py
+```
+
+Copy the printed output directly into your .env file.
+
+
 ## Running the application
 ```bash
 uv run attackmate-api
@@ -78,7 +103,7 @@ Swagger UI: https://<host>:8445/docs – interactive API documentation.
 ## Authentication
 The API uses token-based authentication.
 
-Endpoint: POST /login
+Endpoint: `POST /login`
 
 Request:
 ```json
@@ -99,10 +124,23 @@ Response:
 Use the token in the Authorization header for all protected endpoints
 
 ## API Endpoints
-POST /playbooks/execute/yaml – Execute a playbook provided as YAML content on an AttackMate instantiated for the duration of playbook execution.
+`POST /playbooks/execute/yaml` – Execute a playbook provided as YAML content on an AttackMate instantiated for the duration of playbook execution.
 
-POST /command/execute – Execute a command on a persistent AttackMate instance.
+`POST /command/execute` – Execute a command on a persistent AttackMate instance.
 Request body must follow the RemotelyExecutableCommand schema
+
+## Client Usage
+The recommended way to interact with the API is via the [AttackMate Client](https://github.com/ait-testbed/attackmate-client), which provides a convenient interface for authentication, playbook submission, and result retrieval.
+
+## Security Notes
+**Change default passwords immediately.** The example credentials in `scripts/create_hashes.py` are for demonstration only.
+**Never commit `.env` to version control.** Ensure `.env` is listed in `.gitignore`.
+**Use CA-signed certificates in production.** Self-signed certificates should only be used for local testing.
+**Restrict network access** to the API server to trusted hosts where possible.
+
+## Related Projects
+[AttackMate](https://github.com/ait-testbed/attackmate) – the underlying attack orchestration engine
+[AttackMate Client](https://github.com/ait-testbed/attackmate-client) – recommended client for interacting with this API
 
 ## License
 This project is licensed under [EUPL-1.2](LICENSE)
