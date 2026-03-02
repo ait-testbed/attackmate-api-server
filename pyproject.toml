@@ -22,6 +22,7 @@ dependencies = [
     "attackmate @ git+https://github.com/thorinaboenke/attackmate.git@_api_refactor",
     "pytest-asyncio",
     "mypy>=1.19.1",
+    "pydantic-settings>=2.13.1",
 ]
 dynamic = ["version"]
 
