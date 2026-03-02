@@ -10,9 +10,11 @@ class Settings(BaseSettings):
     attackmate_config_path: Optional[str] = Field(default=None, alias="ATTACKMATE_CONFIG_PATH")
     token_expire_minutes: int = 30
 
-    # SSL Settings
-    ssl_key_file: str = "key.pem"
-    ssl_cert_file: str = "cert.pem"
+    # SSL Settings - support both full paths and relative filenames
+    ssl_key_path: Optional[str] = Field(default=None, alias="SSL_KEY_PATH")
+    ssl_cert_path: Optional[str] = Field(default=None, alias="SSL_CERT_PATH")
+    ssl_key_file: str = "key.pem"   # fallback relative filename
+    ssl_cert_file: str = "cert.pem"  # fallback relative filename
     write_playbook_logs_to_disk: bool = False  # Set WRITE_PLAYBOOK_LOGS_TO_DISK in .env
     log_dir: str = "attackmate_server_logs"
 

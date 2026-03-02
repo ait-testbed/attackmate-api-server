@@ -18,8 +18,10 @@ from attackmate_api_server.auth_utils import create_access_token, get_user_hash,
 from attackmate_api_server.schemas import TokenResponse
 
 CERT_DIR = os.path.dirname(os.path.abspath(__file__))
-KEY_FILE = os.path.join(CERT_DIR, settings.ssl_key_file)
-CERT_FILE = os.path.join(CERT_DIR, settings.ssl_cert_file)
+
+# Use absolute path from env if provided, otherwise fall back to relative (package dir)
+KEY_FILE = settings.ssl_key_path or os.path.join(CERT_DIR, settings.ssl_key_file)
+CERT_FILE = settings.ssl_cert_path or os.path.join(CERT_DIR, settings.ssl_cert_file)
 
 # Initialize loggers
 logger = initialize_api_logger(debug=True, append_logs=False)
