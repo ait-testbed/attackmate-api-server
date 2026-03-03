@@ -166,7 +166,7 @@ def start() -> None:
         sys.exit(1)
     uvicorn.run('attackmate_api_server.main:app',
                 host='0.0.0.0',
-                port=8445,
+                port=settings.attackmate_api_server_port,
                 reload=False,
 
                 ssl_keyfile=KEY_FILE,

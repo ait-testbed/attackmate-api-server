@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     ssl_cert_file: str = "cert.pem"  # fallback relative filename
     write_playbook_logs_to_disk: bool = False  # Set WRITE_PLAYBOOK_LOGS_TO_DISK in .env
     log_dir: str = "attackmate_server_logs"
+    attackmate_api_server_port: int = 8445
 
     # User Hashes: Key is username (lowercase), Value is argon2 hash
     # Environment Var: users='{"user1": "hash1"}'
