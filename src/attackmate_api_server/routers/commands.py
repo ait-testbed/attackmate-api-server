@@ -68,5 +68,4 @@ async def execute_unified_command(
         result=result_model,
         state=state_model,
         instance_id='default-context',
-        current_token=x_auth_token
     )

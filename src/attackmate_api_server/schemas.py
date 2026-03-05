@@ -18,7 +18,6 @@ class ExecutionResponseModel(BaseModel):
     result: CommandResultModel
     state: VariableStoreStateModel
     instance_id: Optional[str] = None
-    current_token: Optional[str] = Field(None, description='Renewed auth token for subsequent requests.')
 
 
 class PlaybookResponseModel(BaseModel):
@@ -29,7 +28,6 @@ class PlaybookResponseModel(BaseModel):
     attackmate_log: Optional[str] = Field(None, description='Content of the attackmate.log for this run.')
     output_log: Optional[str] = Field(None, description='Content of the output.log for this run.')
     json_log: Optional[str] = Field(None, description='Content of the attackmate.json for this run.')
-    current_token: Optional[str] = Field(None, description='Renewed auth token for subsequent requests.')
 
 
 class TokenResponse(BaseModel):

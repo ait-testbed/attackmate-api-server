@@ -35,6 +35,7 @@ async def execute_playbook_from_yaml(
 
     - `debug` (query param): controls the AttackMate instance log level (DEBUG vs INFO)
     - `WRITE_PLAYBOOK_LOGS_TO_DISK` (.env setting): instance logs saved to disk on the server
+    to LOG_DIR. (Logs are in any case captured in-memory and returned in the response.)
     """
     logger.info('Received request to execute playbook from YAML content.')
     instance_id = str(uuid.uuid4())
@@ -99,5 +100,4 @@ async def execute_playbook_from_yaml(
         attackmate_log=attackmate_log,
         output_log=output_log,
         json_log=json_log,
-        current_token=x_auth_token
     )
