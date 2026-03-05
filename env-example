@@ -13,3 +13,5 @@ WRITE_PLAYBOOK_LOGS_TO_DISK="False"
 
 # Directory for log output
 LOG_DIR="/path/to/logs"
+
+ATTACKMATE_API_SERVER_PORT=8445

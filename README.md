@@ -81,6 +81,7 @@ LOG_DIR="/path/to/logs"
 | `ATTACKMATE_CONFIG_PATH` | Absolute path to the AttackMate config YAML |
 | `WRITE_PLAYBOOK_LOGS_TO_DISK` | Whether to persist playbook logs to disk (`True`/`False`) |
 | `LOG_DIR` | Directory for log output |
+| `ATTACKMATE_API_SERVER_PORT` | The port on which the server listens for incoming REST API requests. |
 
 
 To generate the USERS value, edit and run `scripts/create_hashes.py` with your desired usernames and passwords:
@@ -97,6 +98,8 @@ uv run attackmate-api
 ```
 
 The server will run on https://0.0.0.0:8445 by default.
+
+Can be changed via ATTACKMATE_API_SERVER_PORT in the .env file
 
 Swagger UI: https://<host>:8445/docs – interactive API documentation.
 
