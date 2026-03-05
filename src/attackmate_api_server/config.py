@@ -5,8 +5,6 @@ from pydantic import Field
 
 
 class Settings(BaseSettings):
-    # App Settings
-    # Environment Var: ATTACKMATE_CONFIG_PATH
     attackmate_config_path: Optional[str] = Field(default=None, alias="ATTACKMATE_CONFIG_PATH")
     token_expire_minutes: int = 30
 
@@ -26,7 +24,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        # Allows extra env vars without crashing
         extra="ignore"
     )
 
