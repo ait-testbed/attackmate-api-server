@@ -17,6 +17,15 @@ router = APIRouter(prefix='/playbooks', tags=['Playbooks'])
 logger = logging.getLogger('attackmate_api')
 
 
+def _format_validation_errors(exc: ValidationError) -> list[str]:
+    """Convert a Pydantic ValidationError into a list of human-readable
+    strings."""
+    return [
+        f"'{'  ->  '.join(str(p) for p in e['loc']) or '(root)'}': {e['msg']}"
+        for e in exc.errors()
+    ]
+
+
 @router.post('/execute/yaml', response_model=PlaybookResponseModel)  # type: ignore[misc]
 async def execute_playbook_from_yaml(
     playbook_yaml: str = Body(..., media_type='application/yaml'),
@@ -66,9 +75,28 @@ async def execute_playbook_from_yaml(
             return_code = await am_instance.main()
             final_state = varstore_to_state_model(am_instance.varstore)
             logger.info(f'Transient playbook execution finished. Return code: {return_code}')
-        except (yaml.YAMLError, ValidationError, ValueError) as e:
-            logger.error(f'Playbook validation/parsing error: {e}')
-            raise HTTPException(status_code=422, detail=f'Invalid playbook YAML: {e}')
+        except yaml.YAMLError as e:
+            logger.error(f'Playbook YAML parse error: {e}')
+            raise HTTPException(
+                status_code=422,
+                detail={'message': 'Invalid playbook YAML: failed to parse YAML.', 'errors': [str(e)]},
+            )
+        except ValidationError as e:
+            errors = _format_validation_errors(e)
+            logger.error(f'Playbook validation error ({len(errors)} issue(s)): ' + '; '.join(errors))
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    'message': f'Invalid playbook: {len(errors)} validation error(s).',
+                    'errors': errors,
+                },
+            )
+        except ValueError as e:
+            logger.error(f'Playbook value error: {e}')
+            raise HTTPException(
+                status_code=422,
+                detail={'message': 'Invalid playbook YAML.', 'errors': [str(e)]},
+            )
         except Exception as e:
             logger.error(f'Unexpected error during playbook execution: {e}', exc_info=True)
             raise HTTPException(status_code=500, detail=f'Server error during playbook execution: {e}')
