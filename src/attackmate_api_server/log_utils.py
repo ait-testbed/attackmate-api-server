@@ -69,6 +69,9 @@ def instance_logging(
     Always captures logs in-memory to return to the client.
     Only writes to disk if write_playbook_logs_to_disk=True.
     Yields a dict with keys: 'log_files' (List[Optional[str]]) and 'handlers_ref' (InMemoryLogHandler per logger).
+
+    Exceptions raised inside the `with` block propagate normally — cleanup
+    always runs via `finally`, and FastAPI's exception handlers receive the original HTTPException.
     """
     file_handlers: List[logging.FileHandler] = []
     log_files: List[Optional[str]] = [None, None, None]  # [attackmate, output, json]
@@ -125,21 +128,17 @@ def instance_logging(
             'mem_handlers': mem_map,          # access .get_logs() after the block
         }
 
-    except Exception as e:
-        api_logger.error(f"Error setting up instance logging for '{instance_id}': {e}", exc_info=True)
-        yield {'log_files': [], 'mem_handlers': {}}
-
     finally:
         for logger_name in TARGET_LOGGER_NAMES:
-                logger = logging.getLogger(logger_name)
+            logger = logging.getLogger(logger_name)
 
-                mem_h = mem_map.get(logger_name)
-                if mem_h:
-                    logger.removeHandler(mem_h)
+            mem_h = mem_map.get(logger_name)
+            if mem_h:
+                logger.removeHandler(mem_h)
 
-                for handler in list(logger.handlers): 
-                    if isinstance(handler, logging.FileHandler):
-                        logger.removeHandler(handler)
+            for handler in list(logger.handlers):
+                if isinstance(handler, logging.FileHandler):
+                    logger.removeHandler(handler)
 
         for handler in file_handlers:
             try:
