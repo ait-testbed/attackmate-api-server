@@ -71,7 +71,7 @@ async def execute_playbook_from_yaml(
                 raise ValueError('Received empty or invalid playbook YAML content.')
             playbook = Playbook.model_validate(playbook_dict)
             logger.info(f'Creating transient AttackMate instance, ID: {instance_id}')
-            am_instance = AttackMate(playbook=playbook, config=attackmate_config, varstore=None)
+            am_instance = AttackMate(playbook=playbook, config=attackmate_config, varstore=None,is_api_instance=True)
             return_code = await am_instance.main()
             final_state = varstore_to_state_model(am_instance.varstore)
             logger.info(f'Transient playbook execution finished. Return code: {return_code}')
