@@ -10,7 +10,7 @@ from attackmate_api_server.auth_utils import API_KEY_HEADER_NAME, get_current_us
 from attackmate_api_server.schemas import PlaybookResponseModel
 from attackmate_api_server.utils import varstore_to_state_model
 from attackmate_api_server.log_utils import instance_logging
-from attackmate_api_server.state import attackmate_config
+from attackmate_api_server.state import get_attackmate_config
 from attackmate_api_server.config import settings
 
 router = APIRouter(prefix='/playbooks', tags=['Playbooks'])
@@ -71,7 +71,9 @@ async def execute_playbook_from_yaml(
                 raise ValueError('Received empty or invalid playbook YAML content.')
             playbook = Playbook.model_validate(playbook_dict)
             logger.info(f'Creating transient AttackMate instance, ID: {instance_id}')
-            am_instance = AttackMate(playbook=playbook, config=attackmate_config, varstore=None)
+            am_config = get_attackmate_config()
+            am_instance = AttackMate(playbook=playbook, config=am_config,
+                                     varstore=None, is_api_instance=True)
             return_code = await am_instance.main()
             final_state = varstore_to_state_model(am_instance.varstore)
             logger.info(f'Transient playbook execution finished. Return code: {return_code}')
