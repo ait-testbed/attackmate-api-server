@@ -13,7 +13,8 @@
 ## Requirements
 
 - Python 3.10+
-- pip
+- pip or uv
+- openssl
 
 ## Installation
 
