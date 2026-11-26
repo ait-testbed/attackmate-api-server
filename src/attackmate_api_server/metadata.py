@@ -5,7 +5,7 @@ __date__ = '2026/11/26'
 __license__ = 'EUPL-1.2'
 __maintainer__ = 'Thorina Boenke, Wolfgang Hotwagner'
 __status__ = 'Production'
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 __version_string__ = (
     f'(Austrian Institute of Technology)\t'
     f'Version: {__version__}')
