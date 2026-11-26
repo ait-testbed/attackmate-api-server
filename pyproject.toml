@@ -2,11 +2,17 @@
 name = "attackmate-api-server"
 description = "API server for remote control and execution of AttackMate instances."
 authors = [
-    {name = "Thorina Boenke", email = "thorina.boenke@ait.ac.at"}
+    {name = "Thorina Boenke", email = "aecid@ait.ac.at"}
+]
+maintainers = [
+    {name = "Thorina Boenke", email = "aecid@ait.ac.at"},
+    {name = "Wolfgang Hotwagner"},
 ]
 readme = "README.md"
-requires-python = ">=3.10"
-license = {text = "EUPL-1.2"}
+requires-python = ">=3.11"
+license = "EUPL-1.2"
+license-files = ["LICENSE.md"]
+keywords = ["attackmate", "fastapi", "security", "penetration-testing"]
 
 dependencies = [
     "fastapi",
@@ -17,19 +23,18 @@ dependencies = [
     "passlib[bcrypt]",
     "argon2-cffi",
     "python-dotenv",
-    "pytest-asyncio",
-    "pytest",
-    "attackmate @ git+https://github.com/ait-testbed/attackmate.git@development",
-    "pytest-asyncio",
-    "mypy>=1.19.1",
+    "pyyaml",
+    "attackmate>=1.0.2",
     "pydantic-settings>=2.13.1",
 ]
 dynamic = ["version"]
 
 [dependency-groups]
 dev = [
+    "mypy>=1.19.1",
     "prek>=0.2.8",
     "pytest>=8.4.1",
+    "pytest-asyncio",
     "pytest-mock",
     "pytest-cov>=6.2.1",
     "types-requests",
@@ -39,8 +44,14 @@ dev = [
 [project.scripts]
 attackmate-api = "attackmate_api_server.main:start"
 
+[project.urls]
+Homepage = "https://github.com/ait-testbed/attackmate-api-server"
+Repository = "https://github.com/ait-testbed/attackmate-api-server"
+Issues = "https://github.com/ait-testbed/attackmate-api-server/issues"
+Changelog = "https://github.com/ait-testbed/attackmate-api-server/releases"
+
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

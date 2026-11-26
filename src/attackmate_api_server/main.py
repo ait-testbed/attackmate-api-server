@@ -16,6 +16,7 @@ from attackmate_api_server.routers import commands, instances, playbooks
 from attackmate_api_server.config import settings
 from attackmate_api_server.auth_utils import create_access_token, get_user_hash, verify_password
 from attackmate_api_server.schemas import TokenResponse
+from attackmate_api_server.metadata import __version__
 
 CERT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -80,7 +81,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(
     title='AttackMate API',
     description='API for remote control of AttackMate instances and playbook execution.',
-    version='1.0.0',
+    version=__version__,
     lifespan=lifespan)
 
 
