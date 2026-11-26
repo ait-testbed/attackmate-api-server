@@ -2,7 +2,8 @@
 # Copy this file to .env and fill in your values
 
 # JSON object mapping usernames to Argon2-hashed passwords
-# Generate hashes using: python scripts/create_hashes.py
+# Generate a hash with:
+#   uv run --with argon2-cffi python -c "import getpass; from argon2 import PasswordHasher; print(PasswordHasher().hash(getpass.getpass()))"
 USERS='{"username": "<argon2_hash>"}'
 
 # Absolute path to the AttackMate configuration file
