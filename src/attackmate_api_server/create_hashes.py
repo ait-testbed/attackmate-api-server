@@ -1,7 +1,7 @@
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
 import json
 
-pwd_context = CryptContext(schemes=['argon2'], deprecated='auto')
+password_hasher = PasswordHasher()
 
 # Define your users here: { 'username': 'plain_text_password' }
 users = {
@@ -10,7 +10,7 @@ users = {
     'analyst': 'secure_password_123'
 }
 
-hashed_users = {username: pwd_context.hash(password) for username, password in users.items()}
+hashed_users = {username: password_hasher.hash(password) for username, password in users.items()}
 
 print("\n--- Copy the line below into your .env file ---")
 print("# AttackMate API User Credentials")

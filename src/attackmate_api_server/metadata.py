@@ -1,7 +1,7 @@
 __authors__ = ['Thorina Boenke']
 
 __copyright__ = 'Copyright 2025, AIT Austrian Institute of Technology GmbH'
-__date__ = '2025/12/02'
+__date__ = '2026/11/26'
 __license__ = 'EUPL-1.2'
 __maintainer__ = 'Thorina Boenke, Wolfgang Hotwagner'
 __status__ = 'Production'

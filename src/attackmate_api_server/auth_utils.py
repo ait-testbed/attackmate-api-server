@@ -6,7 +6,8 @@ from typing import Any, Dict, Optional
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerificationError
 from attackmate_api_server.config import settings
 
 load_dotenv()
@@ -14,7 +15,7 @@ load_dotenv()
 
 API_KEY_HEADER_NAME = 'X-Auth-Token'
 api_key_header_scheme = APIKeyHeader(name=API_KEY_HEADER_NAME, auto_error=True)
-pwd_context = CryptContext(schemes=['argon2'], deprecated='auto')
+password_hasher = PasswordHasher()
 
 # In-Memory token Store
 # token looks like this token : {"username": str, "expires": datetime}
@@ -26,7 +27,10 @@ logger = logging.getLogger('attackmate_api')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bool(pwd_context.verify(plain_password, hashed_password))
+    try:
+        return bool(password_hasher.verify(hashed_password, plain_password))
+    except (VerificationError, InvalidHashError):  # wrong password or malformed hash in USERS
+        return False
 
 
 def get_user_hash(username: str) -> Optional[str]:
