@@ -2,7 +2,8 @@
 # Copy this file to .env and fill in your values
 
 # JSON object mapping usernames to Argon2-hashed passwords
-# Generate hashes using: python scripts/create_hashes.py
+# Generate a hash with:
+#   uv run --with argon2-cffi python -c "import getpass; from argon2 import PasswordHasher; print(PasswordHasher().hash(getpass.getpass()))"
 USERS='{"username": "<argon2_hash>"}'
 
 # Absolute path to the AttackMate configuration file
@@ -15,3 +16,7 @@ WRITE_PLAYBOOK_LOGS_TO_DISK="False"
 LOG_DIR="/path/to/logs"
 
 ATTACKMATE_API_SERVER_PORT=8445
+
+# TLS key and certificate (relative paths resolve against the directory you start the server from)
+SSL_KEY_PATH="key.pem"
+SSL_CERT_PATH="cert.pem"

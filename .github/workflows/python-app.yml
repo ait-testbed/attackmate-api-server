@@ -27,6 +27,9 @@ jobs:
         activate-environment: true
         enable-cache: true
 
+    - name: Check lockfile is up to date
+      run: uv lock --check
+
     - name: Run pre-commit with prek
       run: uv run --dev prek run -a
         

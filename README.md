@@ -12,28 +12,29 @@
 
 ## Requirements
 
-- Python 3.10+
-- pip or uv
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/)
 - openssl
 
 ## Installation
+
+From PyPI:
+
+```bash
+uv tool install attackmate-api-server
+```
+
+This installs the `attackmate-api` command on your PATH. Configuration (`.env`, `key.pem`, `cert.pem`) is read
+from the directory you start it in.
+
+From source:
 
 ```bash
 git clone https://github.com/ait-testbed/attackmate-api-server.git
 cd attackmate-api-server
 ```
 
-With uv (recommended):
-
-```bash
-uv sync --dev
-```
-
-Using pip and virtualenv:
-```
-python -m venv venv
-source venv/bin/activate
-pip install -e .
+uv sync
 ```
 
 ## Developer setup
@@ -67,6 +68,9 @@ Common Name: server IP adress
 
 Clients receive the cert.pem SSL certificate
 
+By default the server looks for `key.pem` and `cert.pem` in the directory you start it from
+(the same directory as `.env`). Set `SSL_KEY_PATH` and `SSL_CERT_PATH` to use files elsewhere.
+
 ## Environment Configuration
 Create an .env file in the project root with the following variables:
 ```env
@@ -85,17 +89,21 @@ LOG_DIR="/path/to/logs"
 | `ATTACKMATE_API_SERVER_PORT` | The port on which the server listens for incoming REST API requests. |
 
 
-To generate the USERS value, edit and run `scripts/create_hashes.py` with your desired usernames and passwords:
+To generate a password hash for `USERS`, run this and type the password when asked:
 ```bash
-python scripts/create_hashes.py
+uv run --with argon2-cffi python -c "import getpass; from argon2 import PasswordHasher; print(PasswordHasher().hash(getpass.getpass()))"
 ```
 
-Copy the printed output directly into your .env file.
+Put the printed hash into your .env file, keeping the outer single quotes (the hash contains `$`):
+```env
+USERS='{"alice": "$argon2id$v=19$m=65536,t=3,p=4$..."}'
+```
 
 
 ## Running the application
 ```bash
-uv run attackmate-api
+attackmate-api          # installed with uv tool install
+uv run attackmate-api   # from a source checkout
 ```
 
 The server will run on https://0.0.0.0:8445 by default.
@@ -137,7 +145,7 @@ Request body must follow the RemotelyExecutableCommand schema
 The recommended way to interact with the API is via the [AttackMate Client](https://github.com/ait-testbed/attackmate-client), which provides a convenient interface for authentication, playbook submission, and result retrieval.
 
 ## Security Notes
-**Change default passwords immediately.** The example credentials in `scripts/create_hashes.py` are for demonstration only.
+**Use strong passwords.** Anyone who can log in can run commands on the server.
 **Never commit `.env` to version control.** Ensure `.env` is listed in `.gitignore`.
 **Use CA-signed certificates in production.** Self-signed certificates should only be used for local testing.
 **Restrict network access** to the API server to trusted hosts where possible.
