@@ -67,6 +67,9 @@ Common Name: server IP adress
 
 Clients receive the cert.pem SSL certificate
 
+By default the server looks for `key.pem` and `cert.pem` in the directory you start it from
+(the same directory as `.env`). Set `SSL_KEY_PATH` and `SSL_CERT_PATH` to use files elsewhere.
+
 ## Environment Configuration
 Create an .env file in the project root with the following variables:
 ```env
