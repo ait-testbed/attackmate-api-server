@@ -37,6 +37,8 @@ dev = [
     "pytest-mock",
     "pytest-cov>=6.2.1",
     "types-requests",
+    "deptry>=0.25.1",
+    "httpx>=0.28.1",
 ]
 
 
@@ -59,6 +61,18 @@ where = ["src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "attackmate_api_server.metadata.__version__"}
+
+[tool.deptry]
+known_first_party = ["attackmate_api_server"]
+# the tests live in test/, not deptry's default tests/
+extend_exclude = ["test"]
+
+[tool.deptry.package_module_name_map]
+argon2-cffi = "argon2"
+
+[tool.deptry.per_rule_ignores]
+# FastAPI needs python-multipart for form logins (OAuth2PasswordRequestForm) but never imports it by name
+DEP002 = ["python-multipart"]
 
 [tool.flake8]
 max-line-length = 110

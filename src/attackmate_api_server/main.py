@@ -141,7 +141,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(username=form_data.username)
     logger.info(f"Login successful for user '{form_data.username}'. Token created.")
     # Return token
-    return TokenResponse(access_token=access_token, token_type='bearer')
+    return TokenResponse(access_token=access_token, token_type='bearer')  # nosec B106 (not a password)
 
 # Include Routers
 app.include_router(instances.router, prefix='/instances')
@@ -163,7 +163,7 @@ def start() -> None:
         logger.critical(f'SSL Error: Certificate file not found at {CERT_FILE}')
         sys.exit(1)
     uvicorn.run('attackmate_api_server.main:app',
-                host='0.0.0.0',
+                host='0.0.0.0',  # nosec B104 - remote API server, must be reachable from the network
                 port=settings.attackmate_api_server_port,
                 reload=False,
 

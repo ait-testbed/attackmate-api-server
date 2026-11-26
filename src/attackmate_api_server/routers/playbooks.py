@@ -39,8 +39,9 @@ async def execute_playbook_from_yaml(
     current_user: str = Depends(get_current_user),
     x_auth_token: Optional[str] = Header(None, alias=API_KEY_HEADER_NAME)
 ) -> PlaybookResponseModel:
-    """Executes a playbook provided as YAML content in the request body. Uses a
-    transient AttackMate instance.
+    """Executes a playbook provided as YAML content in the request body.
+
+    Uses a transient AttackMate instance.
 
     - `debug` (query param): controls the AttackMate instance log level (DEBUG vs INFO)
     - `WRITE_PLAYBOOK_LOGS_TO_DISK` (.env setting): instance logs saved to disk on the server

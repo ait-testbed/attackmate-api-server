@@ -75,7 +75,6 @@ def cleanup_expired_tokens() -> None:
 async def get_current_user(token: str = Depends(api_key_header_scheme)) -> str:
     """Validate token and return the username renews the token's expiration on
     successful validation cleanup of expired tokens."""
-
     cleanup_expired_tokens()
 
     credentials_exception = HTTPException(
