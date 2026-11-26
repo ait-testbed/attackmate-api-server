@@ -58,6 +58,19 @@ repos:
     - id: docformatter
 
 
+# Security scanner
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.8.6
+  hooks:
+    - id: bandit
+      exclude: ^test/
+
+# Unused, missing and misplaced dependencies; language: system, so deptry comes from the dev group
+- repo: https://github.com/osprey-oss/deptry
+  rev: 0.25.1
+  hooks:
+    - id: deptry
+
 # Log and syntax pattern checks
 - repo: https://github.com/pre-commit/pygrep-hooks
   rev: v1.10.0
